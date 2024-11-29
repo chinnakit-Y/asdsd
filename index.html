@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Hosting</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #uploaded-image {
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload Your Image</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="image" id="image" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <div id="result">
+        <p id="success-message" style="display: none;"></p>
+        <img id="uploaded-image" style="display: none;" alt="Uploaded Image">
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#upload-form").on("submit", function (e) {
+                e.preventDefault();
+
+                let formData = new FormData(this);
+
+                $.ajax({
+                    url: "upload.php",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $("#success-message")
+                                .text("Uploaded Successfully! Share this link: " + response.file_url)
+                                .show();
+                            $("#uploaded-image")
+                                .attr("src", response.file_url)
+                                .show();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while uploading.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
